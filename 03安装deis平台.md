@@ -1,4 +1,4 @@
-#编译deisctl
+# 1. 编译deisctl
 这步可以放在CoreOS集群安装之前，若你采用的是deis1.0.2我已将编译好的![](https://github.com/wiselyman/deis-installation/blob/master/01resources/deisctl)放在此处。
 ##下载deis1.0.2
 - 地址：https://github.com/deis/deis/archive/v1.0.2.zip
@@ -9,8 +9,8 @@
 - `make -C deisctl build`
 -  这时候编译好的deisctl在`/root/workspace/src/github.com/deis/deisctl`目录下
 
-#安装deis平台
-## pull deis docker images
+# 2. 安装deis平台
+## 2.1 pull deis docker images
 用工作机pull deis平台的镜像，以备以后内网使用,关于如何建立docker私有registry和将docker image转成tar包方便以后复制到非互联网机器请参照
 《[打包docker镜像并使用文件导入](http://wiselyman.iteye.com/blog/2153202) 》
 《[建立docker私有库(docker registry](http://wiselyman.iteye.com/blog/2153083)) 》。
@@ -50,15 +50,15 @@ ubuntu-debootstrap  docker pull ubuntu-debootstrap
 
 progrium/cedarish docker pull progrium/cedarish 
 ```
-##将这些镜像push到本地docker registry
+## 2.2 将这些镜像push到本地docker registry
 举下面一例，所有都要操作
 ```
 docker tag img_id localhost:5000/deis/base
 
 docker push localhost:5000/deis/base
 ```
-##编译deis/builder
-###修改dies/builder的Dockerfile
+## 2.3 编译deis/builder
+### 2.3.1 修改dies/builder的Dockerfile
 - 修改安装![](https://github.com/wiselyman/deis-installation/blob/master/01resources/etcdctl-v0.4.6)路径为内网地址`RUN curl -sSL -o /usr/local/bin/etcdctl http://192.168.1.103/opdemand/etcdctl-v0.4.6`
 - 修改安装[confd](https://github.com/wiselyman/deis-installation/blob/master/01resources/confd-v0.5.0-json)路径为内网`RUN curl -sSL -o /usr/local/bin/confd http://192.168.1.103/opdemand/confd-v0.5.0-json`
 - 注释下载progrium_cedarish_2014_10_01.tar 
@@ -68,11 +68,11 @@ docker push localhost:5000/deis/base
 #RUN curl -#SL -o /progrium_cedarish.tar \
 #    http://192.168.1.103/opdemand/progrium_cedarish_2014_10_01.tar 
 ```
-###修改slugrunner的Dockerfile
+### 2.3.2 修改slugrunner的Dockerfile
 第一句修改为`FROM 192.168.1.103:5000/progrium/cedarish:latest`
-###修改slugbuilder的Dockerfile
+### 2.3.3 修改slugbuilder的Dockerfile
 第一句修改为`FROM 192.168.1.103:5000/progrium/cedarish:latest`
-###修改slugbuilder/builder/install-buildpacks
+### 2.3.4 修改slugbuilder/builder/install-buildpacks
 这个文件里会下载外网的git，所以需要你将github上的git克隆到本地的git server上，本文使用gitblit，修改如下：
 ```
 download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-multi.git         9350571
@@ -88,7 +88,7 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-clojure.gi
 download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-scala.git          v41
 download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git             b261aab
 ```
-####针对java的修改
+#### 2.3.4.1 针对java的修改
 对于heroku-buildpack-java，当使用buildpack发布java程序的时候会从外网下载JDK和maven等，这时候需要下载jdk和maven放在内网，我们这时候也需要修改hero-buildpack-java的代码。
 - /bin/common:` mavenUrl="http://192.168.1.103/maven/maven-${mavenVersion}.tar.gz"`
 - /bin/compile 
@@ -97,16 +97,16 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
    ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/heroku-buildpack-java.jpg)
  - `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
 - 此时java的git版本是658ecd2，如上。
-### deis/builder
+### 2.3.5 deis/builder
 - `make build`
 - push到本地docker registry
-### 安装deis平台
-#### 修改deisctl/units下的服务
+### 2.3.6 安装deis平台
+#### 2.3.6.1 修改deisctl/units下的服务
 - 修改所有涉及ubuntu-debootstrap为`192.168.1.103:5000/ubuntu-debootstrap`。
 - 其余镜像相关的无须修改，因我在每台cloud config里的get_image脚本中已修改。
-#### 上传units目录到/home/core/.deis目录
-#### 上传deis.pub到/home/core/.ssh目录
-#### 开始安装
+#### 2.3.6.2 上传units目录到/home/core/.deis目录
+#### 2.3.6.3 上传deis.pub到/home/core/.ssh目录
+#### 2.3.6.4开始安装
 - `chmod 0600 /home/core/.ssh/deis  `
 - `eval `ssh-agent -s`  `
 - `ssh-add ~/.ssh/deis `
