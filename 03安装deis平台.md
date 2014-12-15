@@ -46,11 +46,12 @@ deis/store-monitor  	docker pull deis/store-monitor:v1.0.2
 
 deis/store-daemon 	docker pull deis/store-daemon:v1.0.2  
 
-ubuntu-debootstrap 
+ubuntu-debootstrap  docker pull ubuntu-debootstrap
 
-progrium/cedarish 
+progrium/cedarish docker pull progrium/cedarish 
 ```
 ##将这些镜像push到本地docker registry
+举下面一例，所有都要操作
 ```
 docker tag img_id localhost:5000/deis/base
 
@@ -58,10 +59,40 @@ docker push localhost:5000/deis/base
 ```
 ##编译deis/builder
 ###修改dies/builder的Dockerfile
-- 修改安装etcdctl路径为内网地址`RUN curl -sSL -o /usr/local/bin/etcdctl http://192.168.1.103/opdemand/etcdctl-v0.4.6`
-- 修改安装confd路径为内网`RUN curl -sSL -o /usr/local/bin/confd http://192.168.1.103/opdemand/confd-v0.5.0-json`
-###修改slugbuilder
-
+- 修改安装![](https://github.com/wiselyman/deis-installation/blob/master/01resources/etcdctl-v0.4.6)路径为内网地址`RUN curl -sSL -o /usr/local/bin/etcdctl http://192.168.1.103/opdemand/etcdctl-v0.4.6`
+- 修改安装[confd](https://github.com/wiselyman/deis-installation/blob/master/01resources/confd-v0.5.0-json)路径为内网`RUN curl -sSL -o /usr/local/bin/confd http://192.168.1.103/opdemand/confd-v0.5.0-json`
+- 注释下载progrium_cedarish_2014_10_01.tar 
+```
+# HACK: import progrium/cedarish as a tarball
+# see https://github.com/deis/deis/issues/1027
+#RUN curl -#SL -o /progrium_cedarish.tar \
+#    http://192.168.1.103/opdemand/progrium_cedarish_2014_10_01.tar 
+```
+###修改slugrunner的Dockerfile
+第一句修改为`FROM 192.168.1.103:5000/progrium/cedarish:latest`
+###修改slugbuilder的Dockerfile
+第一句修改为`FROM 192.168.1.103:5000/progrium/cedarish:latest`
+###修改slugbuilder/builder/install-buildpacks
+这个文件里会下载外网的git，所以需要你将github上的git克隆到本地的git server上，本文使用gitblit，修改如下：
+```
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-multi.git         9350571
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-ruby.git           v127
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-nodejs.git         v60
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-java.git           658ecd2
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-gradle.git         743f73c
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-grails.git         1ef927d
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-play.git           ceede86
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-python.git         v52
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-php.git            v43
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-clojure.git        bc2bfd8
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-scala.git          v41
+download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git             b261aab
+```
+####针对java的修改
+对于heroku-buildpack-java，当使用buildpack发布java程序的时候会从外网下载JDK和maven等，这时候需要下载jdk和maven放在内网，我们这时候也需要修改hero-buildpack-java的代码。
+- /bin/common:` mavenUrl="http://192.168.1.103/maven/maven-${mavenVersion}.tar.gz"`
+- /bin/compile `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
+- 
 #安装deis客户端
 ##编译deis客户端
 - `cd /root/workspace/src/github.com/deis/deis/client`
