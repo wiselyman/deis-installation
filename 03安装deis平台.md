@@ -97,15 +97,21 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
    ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/heroku-buildpack-java.jpg)
  - `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
 - 此时java的git版本是658ecd2，如上。
+
 ### 2.3.5 deis/builder
 - `make build`
 - push到本地docker registry
+
 ### 2.3.6 安装deis平台
+
 #### 2.3.6.1 修改deisctl/units下的服务
 - 修改所有涉及ubuntu-debootstrap为`192.168.1.103:5000/ubuntu-debootstrap`。
 - 其余镜像相关的无须修改，因我在每台cloud config里的get_image脚本中已修改。
+
 #### 2.3.6.2 上传units目录到/home/core/.deis目录
+
 #### 2.3.6.3 上传deis.pub到/home/core/.ssh目录
+
 #### 2.3.6.4开始安装
 - `chmod 0600 /home/core/.ssh/deis  `
 - `eval `ssh-agent -s`  `
