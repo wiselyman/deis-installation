@@ -3,18 +3,19 @@
 - `cd /home/wisely/workspace/deis/client`
 - `make build`
 - 放置在`/usr/local/bin`下
+
 # 2. DNS配置
 工作机上安装bind
 - `yum -y install bind bind-utils `
 - `vi /etc/named.conf`
   增加
-  ```
+```
         zone "wisely.priv" IN {
                 type master;
                 file "wisely.priv.lan";
                 allow-update { none; };
         };
-  ```
+```
 - `vi /var/named/wisely.priv.lan`
   增加
 ```
@@ -43,7 +44,7 @@ deis3            A   192.168.1.109
 ## 3.1 注册用户
 `deis register http://deis.wisely.priv` 第一个注册用户为管理员账号。
 
-## 3.2 上传ssh公钥
+## 3.2 上传ssh公钥(在使用buildpack发布程序时必须)
 - 将deis的公钥上传工作机的/home/user/.ssh下
 - `deis keys:add` 按提示操作
 - ``eval `ssh-agent -s```
