@@ -11,6 +11,9 @@
 ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/xenserver3.jpg)
 ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/xenserver4.jpg)
 ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/xenserver5.jpg)
+## 安装CoreOS
+### 准备apache存储image和image签名
+### 准备cloud-config.yaml
 ## XenServer对CoreOS的特殊配置
 XenServer不支持CoreOS的双系统启动，在安装完成后作一下修改：
 ```
