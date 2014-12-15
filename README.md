@@ -1,4 +1,4 @@
 deis-installation
 =================
 
-deis安装文档
+deis离线安装文档（无互联网）
