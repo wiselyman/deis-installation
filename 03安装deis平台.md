@@ -91,8 +91,12 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
 ####针对java的修改
 对于heroku-buildpack-java，当使用buildpack发布java程序的时候会从外网下载JDK和maven等，这时候需要下载jdk和maven放在内网，我们这时候也需要修改hero-buildpack-java的代码。
 - /bin/common:` mavenUrl="http://192.168.1.103/maven/maven-${mavenVersion}.tar.gz"`
-- /bin/compile `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
-- 
+- /bin/compile 
+ - 下载http://lang-jvm.s3.amazonaws.com/jvm-buildpack-common-v7.tar.gz
+ - 用7zip打开并修改内如如图：
+   ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/heroku-buildpack-java.jpg)
+ - `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
+- 此时java的git版本是658ecd2，如上。
 #安装deis客户端
 ##编译deis客户端
 - `cd /root/workspace/src/github.com/deis/deis/client`
