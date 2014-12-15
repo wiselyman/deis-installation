@@ -1,6 +1,6 @@
 # 1. 编译deisctl
 这步可以放在CoreOS集群安装之前，若你采用的是deis1.0.2我已将编译好的![](https://github.com/wiselyman/deis-installation/blob/master/01resources/deisctl)放在此处。
-##下载deis1.0.2
+## 1.1 下载deis1.0.2
 - 地址：https://github.com/deis/deis/archive/v1.0.2.zip
 - 安装go语言并配置`export GOPATH=/root/workspace`
 - 将文件解压在`/root/workspace/src/github.com/deis`目录下，注意此deis为deis用户不是deis平台，解压后是`deis/deis`
