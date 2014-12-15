@@ -100,8 +100,19 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
 ### deis/builder
 - `make build`
 - push到本地docker registry
-# 安装deis客户端
-## 编译deis客户端
-- `cd /root/workspace/src/github.com/deis/deis/client`
-- `make build`
-## 配置DNS
+### 安装deis平台
+#### 修改deisctl/units下的服务
+- 修改所有涉及ubuntu-debootstrap为`192.168.1.103:5000/ubuntu-debootstrap`。
+- 其余镜像相关的无须修改，因我在每台cloud config里的get_image脚本中已修改。
+#### 上传units目录到/home/core/.deis目录
+#### 上传deis.pub到/home/core/.ssh目录
+#### 开始安装
+- `chmod 0600 /home/core/.ssh/deis  `
+- `eval `ssh-agent -s`  `
+- `ssh-add ~/.ssh/deis `
+- `export DEISCTL_TUNNEL=192.168.1.107`
+- `deisctl config platform set sshPrivateKey=~/.ssh/deis  `
+- `deisctl config platform set domain=wisely.priv`
+- `deisctl install platform  `
+- `deisctl start platform  `
+- 成功后效果：
