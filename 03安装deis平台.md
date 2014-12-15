@@ -59,7 +59,7 @@ docker push localhost:5000/deis/base
 ```
 ## 2.3 编译deis/builder
 ### 2.3.1 修改dies/builder的Dockerfile
-- 修改安装![](https://github.com/wiselyman/deis-installation/blob/master/01resources/etcdctl-v0.4.6)路径为内网地址`RUN curl -sSL -o /usr/local/bin/etcdctl http://192.168.1.103/opdemand/etcdctl-v0.4.6`
+- 修改安装[etcdctl](https://github.com/wiselyman/deis-installation/blob/master/01resources/etcdctl-v0.4.6)路径为内网地址`RUN curl -sSL -o /usr/local/bin/etcdctl http://192.168.1.103/opdemand/etcdctl-v0.4.6`
 - 修改安装[confd](https://github.com/wiselyman/deis-installation/blob/master/01resources/confd-v0.5.0-json)路径为内网`RUN curl -sSL -o /usr/local/bin/confd http://192.168.1.103/opdemand/confd-v0.5.0-json`
 - 注释下载progrium_cedarish_2014_10_01.tar 
 ```
@@ -114,7 +114,7 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
 
 #### 2.3.6.4开始安装
 - `chmod 0600 /home/core/.ssh/deis  `
-- `eval `ssh-agent -s`  `
+- ``eval `ssh-agent -s`  ``
 - `ssh-add ~/.ssh/deis `
 - `export DEISCTL_TUNNEL=192.168.1.107`
 - `deisctl config platform set sshPrivateKey=~/.ssh/deis  `
