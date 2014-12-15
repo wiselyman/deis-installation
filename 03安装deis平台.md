@@ -97,8 +97,11 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
    ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/heroku-buildpack-java.jpg)
  - `JVM_COMMON_BUILDPACK=http://192.168.1.103/jvm-buildpack-common-v7.tar.gz`
 - 此时java的git版本是658ecd2，如上。
-#安装deis客户端
-##编译deis客户端
+### deis/builder
+- `make build`
+- push到本地docker registry
+# 安装deis客户端
+## 编译deis客户端
 - `cd /root/workspace/src/github.com/deis/deis/client`
 - `make build`
-##配置DNS
+## 配置DNS
