@@ -59,4 +59,5 @@ eject ISO，重启安装成功。
 - [`109deis.yaml`](https://github.com/wiselyman/deis-installation/blob/master/01resources/109deis.yaml)
 
 ##配置说明
-对于install-deisctl.service，可自行编译好deisctl放置在apache上让安装过程下载/
+对于install-deisctl.service，可自行编译好deisctl放置在apache上让安装过程下载。
+我暂且将编译好的[deisctl](https://github.com/wiselyman/deis-installation/blob/master/01resources/deisctl)放在这里。在讲述《[安装deis平台](https://github.com/wiselyman/deis-installation/blob/master/03%E5%AE%89%E8%A3%85deis%E5%B9%B3%E5%8F%B0.md)》时，我会讲述如何编译deisctl。
