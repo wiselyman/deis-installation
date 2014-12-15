@@ -116,3 +116,4 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
 - `deisctl install platform  `
 - `deisctl start platform  `
 - 成功后效果：
+  ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/deis-success.jpg)
