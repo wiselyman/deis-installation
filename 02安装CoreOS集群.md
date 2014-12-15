@@ -53,4 +53,8 @@ umount /mnt
 eject ISO，重启安装成功。
 
 # 安装CoreOS集群
-安装集群的方式是在三台服务器分别重复上述步骤，下面是3台cloud config列表
+安装集群的方式是在三台服务器分别重复上述步骤，下面是3台cloud config
+`107deis.yaml`
+
+`108deis.yaml`
+`109deis.yaml`

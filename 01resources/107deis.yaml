@@ -1,0 +1,157 @@
+#cloud-config
+
+hostname: deis1
+
+coreos:
+  etcd:
+    addr: 192.168.1.107:4001
+    peer-addr: 192.168.1.107:7001
+    peer-election-timeout: 2000
+    peer-heartbeat-interval: 500
+  fleet:
+    public-ip: 192.168.1.107
+    etcd_request_timeout: 3
+  units:
+    - name: etcd.service
+      command: start
+    - name: fleet.service
+      command: start
+    - name: static.network
+      content: |
+        [Match]
+        Name=eth0
+
+        [Network]
+        Address=192.168.1.107/24
+        Gateway=192.168.1.254
+    - name: fleet.socket
+      command: start
+      content: |
+        [Socket]
+        # Talk to the API over a Unix domain socket (default)
+        ListenStream=/var/run/fleet.sock
+        Service=fleet.service
+
+        [Install]
+        WantedBy=sockets.target
+    - name: stop-update-engine.service
+      command: start
+      content: |
+        [Unit]
+        Description=stop update-engine
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/systemctl stop update-engine.service
+        ExecStartPost=/usr/bin/systemctl mask update-engine.service
+    - name: install-deisctl.service
+      command: start
+      content: |
+        [Unit]
+        Description=Install deisctl utility
+
+        [Service]
+        Type=oneshot
+        ExecStart=/usr/bin/wget -N -P /opt/bin http://192.168.1.103/deisctl
+        ExecStart=/usr/bin/chmod +x /opt/bin/deisctl
+        RemainAfterExit=yes
+    - name: settimezone.service
+      command: start
+      content: |
+        [Unit]
+        Description=Set the timezone
+
+        [Service]
+        ExecStart=/usr/bin/timedatectl set-timezone UTC
+        RemainAfterExit=yes
+        Type=oneshot
+write_files:
+  - path: /etc/environment
+    permissions: 0644
+    content: |
+        COREOS_PUBLIC_IPV4=192.168.1.107
+        COREOS_PRIVATE_IPV4=192.168.1.107
+  - path: /etc/ntp.conf
+    content: |
+      # Common pool
+      server 192.168.1.103
+
+      # - Allow only time queries, at a limited rate.
+      # - Allow all local queries (IPv4, IPv6)
+      restrict default nomodify nopeer noquery limited kod
+      restrict 127.0.0.1
+      restrict [::1]
+  - path: /etc/deis-release
+    content: |
+      DEIS_RELEASE=v1.0.2
+  - path: /etc/motd
+    content: " \e[31m* *    \e[34m*   \e[32m*****    \e[39mddddd   eeeeeee iiiiiii   ssss\n\e[31m*   *  \e[34m* *  \e[32m*   *     \e[39md   d   e    e    i     s    s\n \e[31m* *  \e[34m***** \e[32m*****     \e[39md    d  e         i    s\n\e[32m*****  \e[31m* *    \e[34m*       \e[39md     d e         i     s\n\e[32m*   * \e[31m*   *  \e[34m* *      \e[39md     d eee       i      sss\n\e[32m*****  \e[31m* *  \e[34m*****     \e[39md     d e         i         s\n  \e[34m*   \e[32m*****  \e[31m* *      \e[39md    d  e         i          s\n \e[34m* *  \e[32m*   * \e[31m*   *     \e[39md   d   e    e    i    s    s\n\e[34m***** \e[32m*****  \e[31m* *     \e[39mddddd   eeeeeee iiiiiii  ssss\n\n\e[39mWelcome to Deis\t\t\tPowered by Core\e[38;5;45mO\e[38;5;206mS\e[39m\n"
+  - path: /etc/profile.d/nse-function.sh
+    permissions: '0755'
+    content: |
+      function nse() {
+        docker exec -it $1 bash
+      }
+  - path: /etc/systemd/system/docker.service.d/50-insecure-registry.conf
+    content: |
+        [Service]
+        Environment="DOCKER_OPTS=--insecure-registry 10.0.0.0/8 --insecure-registry 172.16.0.0/12 --insecure-registry 192.168.0.0/16 --insecure-registry 192.168.1.0/24"
+  - path: /run/deis/bin/get_image
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # usage: get_image <component_path>
+      IMAGE=`etcdctl get $1/image 2>/dev/null`
+
+      # if no image was set in etcd, we use the default plus the release string
+      if [ $? -ne 0 ]; then
+        RELEASE=`etcdctl get /deis/platform/version 2>/dev/null`
+
+        # if no release was set in etcd, use the default provisioned with the server
+        if [ $? -ne 0 ]; then
+          source /etc/deis-release
+          RELEASE=$DEIS_RELEASE
+        fi
+
+        IMAGE=192.168.1.103:5000$1
+      fi
+
+      # remove leading slash
+      echo ${IMAGE#/}
+  - path: /opt/bin/deis-debug-logs
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+
+      echo '--- VERSIONS ---'
+      source /etc/os-release
+      echo $PRETTY_NAME
+      source /etc/deis-release
+      echo "Deis $DEIS_RELEASE"
+      etcd -version
+      fleet -version
+      printf "\n"
+
+      echo '--- SYSTEM STATUS ---'
+      journalctl -n 50 -u etcd --no-pager
+      journalctl -n 50 -u fleet --no-pager
+      printf "\n"
+
+      echo '--- DEIS STATUS ---'
+      deisctl list
+      etcdctl ls --recursive /deis
+      printf "\n"
+  - path: /home/core/.toolboxrc
+    owner: core
+    content: |
+      TOOLBOX_DOCKER_IMAGE=ubuntu-debootstrap
+      TOOLBOX_DOCKER_TAG=latest
+      TOOLBOX_USER=root
+users:  
+  - name: core
+    ssh-authorized-keys: 
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDnnc9m3+z7dm42CYJgEIn49a3aqwpkOmnC7vw1Ms/1zq85S8o44uBsoXUjutOm83UD7Dnp3+IGMu0/Cp8vywFtygX1TY7qkPPtIaHK2aok664x/ZANesCxGx+2Xuu6uzsrR8A1wW8r7l62Dl50LfC/vKkmsBh0yhrRiTYlOP1Uw1vRQS1PAyMDudhBksrEmk5E1rK6UYxOOOWvmqCOlXEfegVJdiGw8CvK2ChIUuIqWlMoCO1jo8wC+T74MtHCKlaFpsq1MnPG/gpOnAIYvCD0aZ2ZV3yTLQaJ2MtPJJKsGodNrUTZcKquinAVzs79gdvJUEm7Wlw7wW7cU4ZozEe3 deis
+
+  - groups:
+      - sudo
+      - docker
