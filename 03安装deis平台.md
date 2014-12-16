@@ -121,5 +121,47 @@ download_buildpack http://admin@192.168.1.110:8080/r/heroku-buildpack-go.git    
 - `deisctl config platform set domain=wisely.priv`
 - `deisctl install platform  `
 - `deisctl start platform  `
-- 成功后效果：
+
+ 成功后效果：
+```
+core@deis1 ~ $ deisctl start platform
+
+Storage subsystem...
+deis-store-monitor.service: activating/start-pre                                 
+deis-store-monitor.service: active/running                                 
+deis-store-daemon.service: activating/start-pre                                 
+deis-store-daemon.service: active/running                                 
+deis-store-metadata.service: activating/start-pre                                 
+deis-store-metadata.service: active/running                                 
+deis-store-gateway.service: activating/start-pre                                 
+deis-store-gateway.service: active/running                                 
+deis-store-volume.service: activating/start-pre                                 
+deis-store-volume.service: active/running                                 
+Logging subsystem...
+deis-logger.service: activating/start-pre                                 
+deis-logger.service: active/running                                 
+deis-logspout.service: activating/start-pre                                 
+deis-logspout.service: active/running                                 
+Control plane...
+deis-registry.service: activating/start-pre                                 
+deis-database.service: activating/start-pre                                 
+deis-cache.service: activating/start-pre                                 
+deis-controller.service: activating/start-pre                                 
+deis-cache.service: active/running                                 
+deis-database.service: active/running                                 
+deis-controller.service: active/running                                 
+deis-registry.service: active/running                                 
+deis-builder.service: activating/start-pre                                 
+deis-builder.service: activating/start-post                                 
+deis-builder.service: active/running                                 
+Data plane...
+deis-publisher.service: active/running                                 
+Routing mesh...
+deis-router@3.service: active/running                                 
+deis-router@1.service: active/running                                 
+deis-router@2.service: active/running                                 
+Done.
+
+Please use `deis register` to setup an administrator account.
+```
   ![](https://raw.githubusercontent.com/wiselyman/deis-installation/master/01resources/deis-success.jpg)
