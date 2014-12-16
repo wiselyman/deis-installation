@@ -72,8 +72,10 @@ CMD ["java","-jar","platform-0.0.1-SNAPSHOT.jar"]
 ```
 
 ### 3.4.2 编译docker image
-`docker build -t localhost:5000/platform .`
-`docker push localhost:5000/platform`
+```
+docker build -t localhost:5000/platform .
+docker push localhost:5000/platform
+```
 
 ### 3.4.3 发布
 - `mkdir -p /tmp/platform && cd /tmp/platform`
