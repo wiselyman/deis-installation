@@ -47,7 +47,7 @@ deis3            A   192.168.1.109
 ## 3.2 上传ssh公钥(在使用buildpack发布程序时必须)
 - 将deis的公钥上传工作机的/home/user/.ssh下
 - `deis keys:add` 按提示操作
-- ``eval `ssh-agent -s```
+- ``eval `ssh-agent -s` ``
 - `ssh-add ~/.ssh/deis`
 
 ## 3.3 使用hero-buildpacks-java发布spring boot jar程序
