@@ -96,3 +96,4 @@ docker push localhost:5000/platform
 - app列表`deis apps:list`
 - 查看单个app信息`deis apps:info --app=platform`
 - 删除app`deis destroy --app=platform`
+- 重启当前app ` deis scale cmd=0 && deis scale cmd=2`
