@@ -83,8 +83,12 @@ docker push localhost:5000/platform
 - `deis pull 192.168.1.103:5000/platform`
 
 ## 3.5 应用自动扩展
-- 对于buildpack发布的程序`deis scale web=2`
-- 对于docker image发布的程序`deis scale cmd=2`
+- 对于buildpack发布的程序
+  - 在app当前目录：`deis scale web=2`
+  - 非app当前目录：`deis scale web=2 -a appname`
+- 对于docker image发布的程序
+  - 在app当前目录：`deis scale cmd=2`
+  - 非app当前目录：`deis scale cmd=2 -a appname`
 
 ## 3.6 常用命令
 - 登录deis`deis login http://deis.wisely.priv   `
