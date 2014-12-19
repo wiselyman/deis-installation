@@ -2,7 +2,7 @@
 - 工作机在非root用户下
 - `cd /home/wisely/workspace/deis/client`
 - `make build`
-- 放置在`/usr/local/bin`下
+- 放置在`/home/wisely/workspace/deis/client/dist/`下
 
 # 2. DNS配置
 工作机上安装bind
